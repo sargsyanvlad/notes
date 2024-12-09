@@ -20,6 +20,12 @@ export class Notes extends Document {
 
   @Prop()
   title: string;
+
+  @Prop()
+  filePath: string;
+
+  @Prop()
+  fileStorage: string;
 }
 
 export const NotesSchema = SchemaFactory.createForClass(Notes);

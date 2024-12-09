@@ -2,12 +2,7 @@ import { Config, Env } from '@ukitgroup/nestjs-config';
 import { Transform } from '@ukitgroup/nestjs-config/transformer';
 import { IsDefined } from '@ukitgroup/nestjs-config/validator';
 
-export type RoleScopes = {
-  title: number; // 1 || 0
-  text: number;
-};
-export type RolesList = 'admin' | 'owner' | 'user';
-export type Roles = Record<RolesList, { scopes: RoleScopes }>;
+import { Roles } from './types';
 
 @Config('NOTES')
 export class NotesConfig {
@@ -16,7 +11,8 @@ export class NotesConfig {
   @Transform((value: string) => {
     try {
       return JSON.parse(value);
-    } catch (_err) {
+    } catch (err) {
+      console.warn(err);
       return value;
     }
   })

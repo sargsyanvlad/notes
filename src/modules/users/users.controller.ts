@@ -1,15 +1,13 @@
-import {
-  Controller,
-  Get,
-  NotFoundException,
-  Req,
-  Request,
-  UseGuards,
-} from '@nestjs/common';
-import { UsersService } from './users.service';
+import { Body, Controller, Get, Post, Req, UseGuards } from '@nestjs/common';
+import { ApiBearerAuth, ApiSecurity } from '@nestjs/swagger';
+
 import { NotesAuthGuard } from '../auth/auth.guard';
 import { NotesService } from '../notes/notes.service';
-import { NotesBaseReq } from '../notes/notes.controller';
+
+import { LoginUserDto } from './dto/login.user.dto';
+import { RegisterUserDto } from './dto/register.user.dto';
+import { UsersService } from './users.service';
+import { NotesBaseReq } from '../notes/types';
 
 @Controller('users')
 export class UsersController {
@@ -19,13 +17,22 @@ export class UsersController {
   ) {}
 
   @Get('me')
+  @ApiSecurity('APIToken')
+  @ApiBearerAuth()
   @UseGuards(NotesAuthGuard)
-  async getMe(@Req() req: NotesBaseReq) {
-    const user = await this.usersService.findOne(req.user.userId);
-    if (!user) {
-      throw new NotFoundException('user not found');
-    }
-    const noteCount = this.notesService.getNoteCount(req.user.userId);
-    return { ...user, noteCount };
+  public async getMe(@Req() req: NotesBaseReq) {
+    const user = await this.usersService.getOwnProfile(req.user.userId);
+    const notesCount = await this.notesService.getNoteCount(req.user);
+    return { user, notesCount };
+  }
+
+  @Post('register')
+  public async register(@Body() registerUserDto: RegisterUserDto) {
+    await this.usersService.register(registerUserDto);
+  }
+
+  @Post('login')
+  public async login(@Body() loginUserDto: LoginUserDto) {
+    return this.usersService.login(loginUserDto);
   }
 }

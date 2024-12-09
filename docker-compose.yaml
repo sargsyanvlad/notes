@@ -3,26 +3,30 @@ version: '2.3'
 services:
   mongodb:
     image: 'mongo:${DEVDOCKER_MONGODB_VERSION:-5.0.24}'
-    expose:
-      - '${DEVDOCKER_MONGODB_PORT:-14217}'
     ports:
-      - '${DEVDOCKER_MONGODB_PORT:-14217}:${DEVDOCKER_MONGODB_PORT:-14217}'
-    command: ['--bind_ip_all', '--replSet', 'rs01', '--port', '${DEVDOCKER_MONGODB_PORT:-14217}']
+      - '27017:27017'
     volumes:
       - 'mongodb-data:/data/db'
+    networks:
+      - node-network
     restart: unless-stopped
-    hostname: mongodb-notes-devdocker
-  mongodb-bootstraper:
-    image: 'mongo:${DEVDOCKER_MONGODB_VERSION:-5.0.24}'
-    depends_on:
-      - mongodb
-    command: |
-      bash -c "
-        until mongo --host mongodb --port ${DEVDOCKER_MONGODB_PORT:-14217} --eval=\"db.adminCommand('ping')\"; do
-          sleep 1
-        done
-        mongo --host mongodb --port ${DEVDOCKER_MONGODB_PORT:-14217} --eval 'rs.initiate(); rs.status();';
-      "
+
+  app:
+    build: .
+    ports:
+      - '3000:3000'
+    environment:
+      env_file: .env
+    volumes:
+      - .:/usr/src/app
+    networks:
+      - node-network
+    command: npm run start
+
 
 volumes:
   mongodb-data:
+
+networks:
+  node-network:
+    driver: bridge

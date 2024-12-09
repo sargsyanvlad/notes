@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsString } from 'class-validator';
+import { IsOptional, IsString } from 'class-validator';
 
 export class CreateNoteDto {
   @IsString()
@@ -9,4 +9,14 @@ export class CreateNoteDto {
   @IsString()
   @ApiProperty({ type: 'string' })
   title: string;
+
+  @IsString()
+  @IsOptional()
+  @ApiProperty({ type: 'string' })
+  filePath?: string;
+
+  @IsString()
+  @IsOptional()
+  @ApiProperty({ type: 'string' })
+  fileStorage?: string;
 }

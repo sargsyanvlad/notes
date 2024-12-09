@@ -9,8 +9,14 @@ export class Users extends Document {
   @Prop({ index: 1 })
   id: string;
 
-  @Prop({ index: 1 })
+  @Prop()
   name: string;
+
+  @Prop()
+  password: string;
+
+  @Prop({ unique: true })
+  email: string;
 }
 
 export const UsersSchema = SchemaFactory.createForClass(Users);

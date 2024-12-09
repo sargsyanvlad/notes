@@ -1,7 +1,9 @@
-import { env } from '../utilities/dotenv';
-import { HttpConfig } from './http.config';
 import { ConfigModule } from '@ukitgroup/nestjs-config';
 import { RAW_CONFIG } from '@ukitgroup/nestjs-config/tokens';
+
+import { env } from '../utilities/dotenv';
+
+import { HttpConfig } from './http.config';
 
 export const AppConfigModule = ConfigModule.forRoot({
   configs: [HttpConfig],

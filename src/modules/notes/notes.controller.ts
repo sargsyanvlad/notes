@@ -10,20 +10,18 @@ import {
   Param,
   NotFoundException,
 } from '@nestjs/common';
-import { NotesService } from './notes.service';
-import { NotesAuthGuard } from '../auth/auth.guard';
-import { CreateNoteDto } from './dto/create.note.dto';
-import { UserJwtPayload } from '../auth/jwt.strategy';
-import { RolesList } from './notes.config';
-import { UpdateNoteDto } from './dto/update.note.dto';
+import { ApiBearerAuth, ApiSecurity } from '@nestjs/swagger';
 
-export type NotesBaseReq = {
-  user: UserJwtPayload;
-  apiKey?: string;
-  role: RolesList;
-};
+import { NotesAuthGuard } from '../auth/auth.guard';
+
+import { CreateNoteDto } from './dto/create.note.dto';
+import { UpdateNoteDto } from './dto/update.note.dto';
+import { NotesService } from './notes.service';
+import { NotesBaseReq } from './types';
 
 @UseGuards(NotesAuthGuard)
+@ApiSecurity('APIToken')
+@ApiBearerAuth()
 @Controller('notes')
 export class NotesController {
   constructor(private readonly notesService: NotesService) {}
@@ -51,7 +49,7 @@ export class NotesController {
   }
 
   @Put('/:id')
-  update(
+  public update(
     @Param('id') id: string,
     @Body() updateNoteDto: UpdateNoteDto,
     @Req() req: NotesBaseReq,
@@ -60,7 +58,7 @@ export class NotesController {
   }
 
   @Delete('/:id')
-  remove(@Param('id') id: string, @Req() req: NotesBaseReq) {
+  public remove(@Param('id') id: string, @Req() req: NotesBaseReq) {
     return this.notesService.deleteNote(id, req.user);
   }
 }

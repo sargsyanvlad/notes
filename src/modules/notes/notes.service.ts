@@ -1,12 +1,15 @@
 import { Injectable, BadRequestException, Inject } from '@nestjs/common';
-import { v4 as uuid } from 'uuid';
-import { SpellCheckService } from '../spellcheck/spellcheck.service';
-import { Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
-import { Notes } from './notes.schema';
-import { NotesConfig } from './notes.config';
+import { Model } from 'mongoose';
+import { v4 as uuid } from 'uuid';
+
+import { SpellCheckService } from '../spellcheck/spellcheck.service';
+
 import { CreateNoteDto } from './dto/create.note.dto';
 import { UpdateNoteDto } from './dto/update.note.dto';
+import { NotesConfig } from './notes.config';
+import { Notes } from './notes.schema';
+import { userRoles, UserRolesMap } from '../users/types';
 
 export type Note = {
   id: string;
@@ -99,16 +102,19 @@ export class NotesService {
     id: string,
     user: { userId: string; role: string },
   ): Promise<void> {
-    if (user.role === 'admin') {
+    if (user.role === UserRolesMap.ADMIN) {
       // TODO NOT GOOD IDEA TO HARDCODE ROLE HERE
       await this.model.deleteOne({ id }).exec();
     }
     await this.model.deleteOne({ id, userId: user.userId }).exec();
   }
 
-  public async getNoteCount(user: { userId: string; role: string }) {
+  public async getNoteCount(user: {
+    userId: string;
+    role: string;
+  }): Promise<number> {
     const { userId } = user;
-    return this.model.aggregate([
+    const notes = await this.model.aggregate([
       {
         $match: { userId },
       },
@@ -119,5 +125,6 @@ export class NotesService {
         },
       },
     ]);
+    return notes[0]?.count || 0;
   }
 }

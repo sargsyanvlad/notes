@@ -1,14 +1,14 @@
 import { Module } from '@nestjs/common';
-import { NotesService } from './notes.service';
-import { NotesController } from './notes.controller';
-import { SpellCheckModule } from '../spellcheck/spellcheck.module';
-import { Notes, NotesSchema } from './notes.schema';
 import { MongooseModule } from '@nestjs/mongoose';
 import { ConfigModule } from '@ukitgroup/nestjs-config';
+
+import { SpellCheckModule } from '../spellcheck/spellcheck.module';
+
 import { NotesConfig } from './notes.config';
-// MongooseModule.forFeature([
-//   { name: AFiCredentialUsernamePassword.name, schema: AFiCredentialUsernamePasswordSchema }
-// ])
+import { NotesController } from './notes.controller';
+import { Notes, NotesSchema } from './notes.schema';
+import { NotesService } from './notes.service';
+
 @Module({
   imports: [
     ConfigModule.forFeature([NotesConfig]),
@@ -20,6 +20,7 @@ import { NotesConfig } from './notes.config';
     ]),
     SpellCheckModule,
   ],
+  exports: [NotesService],
   providers: [NotesService],
   controllers: [NotesController],
 })

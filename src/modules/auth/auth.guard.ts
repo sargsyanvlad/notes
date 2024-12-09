@@ -1,6 +1,7 @@
 import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { Observable } from 'rxjs';
+import * as process from 'process';
 
 @Injectable()
 export class NotesAuthGuard implements CanActivate {
@@ -35,5 +36,5 @@ export class AuthApiKeyGuard implements CanActivate {
 }
 
 const validateApiKey = function (apiKey: string): boolean {
-  return apiKey === 'secretKey'; // This is a dummy implementation
+  return apiKey === process.env.API_SECRET_KEY; // This is a dummy implementation
 };

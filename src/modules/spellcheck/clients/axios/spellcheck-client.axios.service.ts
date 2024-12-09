@@ -1,10 +1,11 @@
 import { Inject, Injectable } from '@nestjs/common';
 import axios, { AxiosInstance } from 'axios';
 import { RawAxiosRequestHeaders } from 'axios/index';
-
 import * as process from 'process';
-import { SpellcheckClientAxiosConfig } from './spellcheck-client.axios.config';
+
 import { ISpellcheckClient } from '../../spellcheck-client.interface';
+
+import { SpellcheckClientAxiosConfig } from './spellcheck-client.axios.config';
 
 export type CheckResult = {
   isValid: boolean;
